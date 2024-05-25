@@ -1,0 +1,141 @@
+{% extends "floor.html" %}
+{% set vox = session['vox'] %}
+
+{% block title %} Crazy Dictionary - {{ vox['name'] }} {% endblock %}
+
+{% block content %}
+
+<script>
+    const REFERENCED = {
+      {% for ref in vox['referenced'] %}
+      {{ ref[0][1:] | tojson }}: {bool: {{ 'true' if ref[1] else 'false' }},
+                           link: '{{ url_for("search_pattern", word=ref[0][1:]) }}'},
+      {% endfor %}
+    };
+</script>
+
+<div class="container text-break mt-4" style="width: 90%;">
+    <h1 class="display-1 text-vio me-3">
+<!--            <i class="bi bi-nut-fill"></i>&emsp;-->
+        {{ vox['name'] }}</h1>
+
+    {% if vox['cat'] and vox['cat'] != [''] %}
+    <div class="card border-vio border-2">
+        <div class="card-body text-center">
+        {% for cat in vox['cat'] %}
+            <a href="{{ url_for('search_category', category=cat) }}" class="btn btn-link text-teal fs-5">{{ cat }}</a>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <hr class="border border-vio border-3 opacity-75">
+
+    <ol class="list-group {{ 'list-group-numbered' if vox['mean'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
+        {% for mean in vox['mean'] %}
+        {% set loop_mean = loop %}
+        <li class="list-group-item text-teal fw-bold border-teal fs-3">
+            <div class="card border-vio">
+            <div class="card-header bg-vio text-light">
+                <div class="d-flex w-40 justify-content-between">
+                    <p class="fw-medium fst-italic ms-5">
+                    {% for mean_cat in mean['mean-cat'] %}
+                    {{ mean_cat if mean_cat else '' }}
+                        {% if (loop.index < mean['mean-cat']|select|list|length) and mean_cat %}&emsp;-&emsp;{% endif %}
+                    {% endfor %}
+                    </p>
+                </div>
+            </div>
+            <div class="card-body fs-4" id="mean-{{ loop_mean.index0 }}">
+                <script>editText("{{ mean['mean'] }}", "mean-{{ loop_mean.index0 }}")</script>
+            </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ol>
+
+    {% if vox['note'] and vox['note'] != [''] %}
+    <div class="card border-warning mb-5">
+        <!-- CHANGE for light mode to yellow and black text in read           -->
+        <div class="card-header bg-yellow-dark  text-light">
+            <h3>Notes</h3>
+        </div>
+        <div class="card-body">
+            <ol class="list-group {{ 'list-group-numbered' if vox['note'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
+                {% for note in vox['note'] %}
+                <li class="list-group-item fs-4">
+                <p class="fs-5 ms-5" id="note-{{ loop.index0 }}">
+                    <script>editLinks("{{ note }}", "note-{{ loop.index0 }}")</script>
+                </p>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if vox['links'] %}
+    <h1 class="text-teal mt-5"> Some related words </h1>
+    {% for link in vox['links'] %}
+    {% set link_loop = loop %}
+    <h1 class="text-danger display-3 ms-2">
+        {% if vox['links'] | length > 1 %}<strong class="me-3">{{ loop.index }}.</strong>{% endif %}
+        <!-- <i class="bi bi-nut-fill"></i>&emsp;-->{{ link['name'] }}
+    </h1>
+    {% if link['cat'] and link['cat'] != [''] %}
+    <div class="card border-danger border-2">
+        <div class="card-body text-center">
+        {% for cat in link['cat'] %}
+            <a href="{{ url_for('search_category', category=cat) }}" class="btn btn-link text-teal fs-5">{{ cat }}</a>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <hr class="border border-danger border-2 opacity-75">
+
+    <ol class="list-group {{ 'list-group-numbered' if link['mean'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
+        {% for mean in link['mean'] %}
+        {% set mean_loop = loop %}
+        <li class="list-group-item fs-4">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-light">
+                    <div class="d-flex w-40 justify-content-between">
+                        <p class="fw-medium fst-italic ms-5">
+                        {% for mean_cat in mean['mean-cat'] %}
+                        {{ mean_cat if mean_cat else '' }}
+                            {% if (loop.index < mean['mean-cat']|select|list|length) and mean_cat %}&emsp;-&emsp;{% endif %}
+                        {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body fs-4" id="linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}">
+                    <script>editText("{{ mean['mean'] }}", "linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}")</script>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ol>
+
+    {% if link['note'] and link['note'] != [''] %}
+    <div class="card border-warning mb-5">
+        <div class="card-header bg-yellow-dark  text-light">
+            <h3>Notes</h3>
+        </div>
+        <div class="card-body">
+            <ol class="list-group {{ 'list-group-numbered' if link['note'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
+                {% for note in link['note'] %}
+                <li class="list-group-item fs-4">
+                    <p class="fs-5 ms-5" id="linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}">
+                        <script>editLinks("{{ note }}", "linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}")</script>
+                    </p>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}

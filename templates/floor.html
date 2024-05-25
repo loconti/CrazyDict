@@ -1,0 +1,142 @@
+{% extends "basement.html" %}
+{% block base_content %}
+{% set vox = session['vox'] %}
+{% set dark_mode = session['dark-mode'] %}
+{% set read_mode = session['read-mode'] %}
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="sticky-top alert alert-{{ category }} text-center" role="alert">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <nav class="navbar">
+        <div class="container">
+        <!--     To have clickable site name -->
+        <!--    <a class="navbar-brand" href="/">Crazy Dictionary</a>-->
+        <span class="navbar-brand mb-0 h1">Crazy Dictionary</span>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <form method="post" role="search">
+                    <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
+                    {% if session['is-chron-back'] %}
+                    <button class="btn btn-outline-secondary me-1" name="go-back" type="submit"><i class="bi bi-arrow-left-circle"></i></button>
+                    {% else %}
+                    <button class="btn btn-outline-secondary me-1" name="go-back" type="submit" disabled><i class="bi bi-arrow-left-circle"></i></button>
+                    {% endif %}
+                    {% if session['is-chron-forward'] %}
+                    <button class="btn btn-outline-secondary me-1" name="go-forward" type="submit"><i class="bi bi-arrow-right-circle"></i></button>
+                    {% else %}
+                    <button class="btn btn-outline-secondary me-1" name="go-forward" type="submit" disabled><i class="bi bi-arrow-right-circle"></i></button>
+                    {% endif %}
+                    <button class="navbar-toggler btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                </form>
+
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="{{ url_for('search_categories') }}">Categories</a>
+                            </li>
+                            <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}"><i class="bi bi-recycle m-2 text-success"></i>Reset</a>
+                            </li>
+                            <li class="nav-item">
+                                <form class="d-flex" method="post">
+                                    <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
+                                    <div class="form-check">
+                                        {% if dark_mode %}
+                                        <input  name="dark-mode" value="light" type="hidden">
+                                        <input class="form-check-input" type="checkbox" id="flexCheckChecked_dark"
+                                             onChange="this.form.submit()" checked>
+                                        <label class="form-check-label" for="flexCheckChecked_dark">
+                                            Dark Mode
+                                        </label>
+                                        {% else %}
+                                         <input name="dark-mode" value="dark" type="hidden">
+                                        <input class="form-check-input" type="checkbox" id="flexCheckChecked_light"
+                                         onChange="this.form.submit()">
+                                        <label class="form-check-label" for="flexCheckChecked_light">
+                                            Dark Mode
+                                        </label>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </li>
+                            <li class="nav-item">
+                                <form class="d-flex" method="post">
+                                    <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
+                                    <div class="form-check">
+                                        {% if read_mode %}
+                                        <input  name="read-mode" value="write" type="hidden">
+                                        <input class="form-check-input" type="checkbox" id="flexCheckChecked_read"
+                                             onChange="this.form.submit()" checked>
+                                        <label class="form-check-label" for="flexCheckChecked_read">
+                                            Read Mode
+                                        </label>
+                                        {% else %}
+                                        <input name="read-mode" value="read" type="hidden">
+                                        <input class="form-check-input" type="checkbox" id="flexCheckChecked_write"
+                                         onChange="this.form.submit()">
+                                        <label class="form-check-label" for="flexCheckChecked_write">
+                                            Read Mode
+                                        </label>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </li>
+                        </ul>
+                        <hr>
+                        <form class="d-flex" method="post" role="search">
+                            <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
+                            <div class="input-group mt-3">
+                                <input class="form-control" type="search" placeholder="Search category, Here . . ." name="category-search" aria-label="Search">
+                                <button class="btn btn-outline-success" name="btn-category-search" type="submit" value="btn-category-search"><i class="bi bi-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+
+        <form class="d-flex" role="search" method="post">
+            <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
+            <div class="input-group">
+                <input class="form-control" type="search" placeholder="{{ vox['name'] if vox['name'] else 'Look it Up Here' }}" value="{{ vox['name']}}" name="search" aria-label="Search">
+                <button class="btn btn-success" name="btn-search" type="submit" value="btn-search"><i class="bi bi-search"></i> | <i class="bi bi-plus-circle"></i></button>
+            </div>
+        </form>
+      </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+  
+  <script>
+    {% if anchor %}
+    function jump(h){
+        document.getElementById(h).scrollIntoView();
+    }
+    jump({{ anchor | tojson }})
+    {% endif %}
+
+    // to select from dropdown
+    function insertTextById(elementId, text) {
+        let element = document.getElementById(elementId);
+        element.value = text;
+    }
+  </script>
+
+  {% block js_content %}{% endblock %}
+
+
+{% endblock %}

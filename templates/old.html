@@ -1,0 +1,18 @@
+{% for exampled in findall('~([^~]+)|([^~]+)', mean['mean']) %}
+{% if exampled[1] %}
+<p class="fw-medium">
+{% else %}
+<p class="fst-italic"> <i class="bi bi-dot"></i>
+{% endif %}
+{% set exampled = exampled[0] if exampled[0] else exampled[1] %}
+{% for piece in findall('(@[^ ]+)|([^@]+)', exampled) %}
+{% if piece[0] %}
+{% set piece = piece[0].replace('_', ' ') %}
+<a class="text-orange"
+    href="{{ url_for('search_pattern', word=piece) }}">{{ piece }}</a>
+{% else %}
+{{ piece[1] }}
+{% endif %}
+{% endfor %}
+</p>
+{% endfor %}

@@ -1,0 +1,22 @@
+{% extends "floor.html" %}
+{% set vox = session['vox'] %}
+
+{% block title %} Crazy Dictionary - {{ vox['name'] }} {% endblock %}
+
+{% block content %}
+
+<div class="container" style="width: 80%">
+    <div class="row align-items-center">
+        <div class="card border-danger mt-4">
+            <div class="card-header text-danger mt-2 mb-2">Evasion Attempt</div>
+            <div class="card-body">
+                <p>You are leaving a dictionary page without updating to your last changes!</p>
+                <p>Are you sure to evade?</p>
+                <hr>
+                <a href="{{ link + ('&' if '?' in link else '?') }}confirm_update=yes&key_form={{ session['key-form'] }}" class="btn btn-primary">Update</a>
+                <a href="{{ link + ('&' if '?' in link else '?') }}confirm_update=no&key_form={{ session['key-form'] }}" class="btn btn-secondary">Evade</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

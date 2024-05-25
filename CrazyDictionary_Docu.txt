@@ -1,0 +1,45 @@
+Architecture
+User_Side | DB_Side
+      <- Vox ->
+
+Class Vox: [ User_Side ]
+
+-> The word with its meanings are in the dict: Word
+    keys: [Word; Meanings*; Categories*; Notes*]
+    *: are lists of string
+-> A word can be referenced by other words [with only 1 recursion]
+    The referenced terms are in a list of  dicts as above.
+-> constructor: Call it to have an empty Vox object to add a new word
+                Or call it with a paramater to search for a word:
+                    If it isn't found returns an empty object with already the wanted word name in it
+                    So just create it!!
+-> update: Updates the dictionary with the new word, or corrects it if it was from search
+
+Class Vox: [ DB_Side ]
+The Word: Dict: {Word; Meanings; Categories; Notes; Key}
+The referenced terms: List of Dict: [{as above} ...] or None
+
+def search(word):
+SELECT word and the categories
+if word not found:
+    Word['word'] = word  #ready to add the new word
+if ref is NULL:
+    gives the query result to __pack()
+else:
+    gives the ref term and the touple of referenced to __pack()
+
+def __init__(word=None):
+if word not None:
+    __search(word)
+
+else:
+    Word['Key'] = -1  #empty object to add new word
+
+
+def update:
+def __pack():
+intialize the object from the query as parameter
+def __unpack:
+gives the update query
+def __eq__:
+    True if every self variable is the same

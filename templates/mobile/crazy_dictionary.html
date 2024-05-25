@@ -1,0 +1,329 @@
+{% extends "floor.html" %}
+{% set vox = session['vox'] %}
+{% set hystory_cat = session['hystory']['categories'] %}
+{% set hystory_note = session['hystory']['notes'] %}
+
+{% block title %} Crazy Dictionary - {{ vox['name'] }} {% endblock %}
+
+{% block content %}
+
+<div class="container-sm mt-4 mb-4" style="width: 100%;margin-top: 6rem">
+    <form method="post">
+        <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
+        <input name="key-form" value="{{ session['key-form'] }}" type="hidden">
+<!--        Name of Vox -->
+        <div class="row">
+            <div class="col-9">
+                <input type="text" class="form-control input-lg no-border" placeholder="{{ vox['name'] }}" value="{{ vox['name'] }}" name="term" >
+            </div>
+            <div class="d-grid gap-3 col-3 mx-auto">
+            <button type="button" class="btn btn-primary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#submitModal">
+                Update
+            </button>
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
+            </div>
+        </div>
+        <!--            Categories-->
+        <div class="card border-success mt-4 mt-2">
+            <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Categorization</h5>
+                <ol class="list-group list-group-numbered mt-1 mb-3" id="ol-cat">
+                    <li class="blueprint list-group-item">
+                        <div class="dropdown">
+                            <input class="form-control no-border" id="input-cat-#number-ol-cat#"
+                            placeholder=". . ." name="cat-#number-ol-cat#" value="#ol-cat#" data-bs-toggle="dropdown" autocomplete="off" aria-expanded="true">
+                            {% if hystory_cat %}
+                            <ul class="dropdown-menu">
+                                {% for word in hystory_cat %}
+                                <li><button class="dropdown-item" type="button" onclick="insertTextById('input-cat-#number-ol-cat#', '{{ word.replace('\'', '\\\'') }}');">{{ word }}</button></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </li>
+                    <!-- button to add new category [from blueprint] -->
+                    <button class="list-group-item list-group-item-action list-group-item-success"
+                            type="button" onclick="newInstance('ol-cat')">New Category</button>
+                </ol>
+            </div>
+        </div>
+<!--        Card with mean and mean-cat list-->
+        <a id="anchor-mean"></a>
+        <div class="card border-info mt-4">
+            <div class="card-header mt-2 mb-2">Meanings</div>
+            <div class="card-body">
+                <ol class="list-group list-group-numbered mt-1 mb-3" id="ol-mean">
+<!--                 Meaning element: mean_cat + mean-->
+                    <li class="blueprint list-group-item">
+                        <div class="row" id="ol-mean-#number-ol-mean#-mean-cat">
+                            <div class="blueprint col-6">
+                                <input type="text" class="form-control input-sm fw-semibold mb-4 no-border"
+                                    name="mean-#number-ol-mean#-mean-cat-#number-ol-mean-#number-ol-mean#-mean-cat#"
+                                    placeholder=". . ." value="#ol-mean-#number-ol-mean#-mean-cat#"
+                                    style="height: 30px">  
+                            </div>
+                            <div class="col-6">
+                                <button class="list-group-item list-group-item-action list-group-item-success"
+                                    type="button" onclick="newInstance('ol-mean-#number-ol-mean#-mean-cat')">New</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <textarea class="form-control mt-2 no-border"
+                        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                        placeholder="Just a meaning . . ." name="mean-#number-ol-mean#">#ol-mean#</textarea>
+                    </li>
+                    <!-- button to add new mean [from blueprint] -->
+                    <button class="list-group-item list-group-item-action list-group-item-success"
+                            type="button" onclick="newInstance('ol-mean', 'ol-mean-#number-ol-mean#-mean-cat');">New Meaning</button>
+                </ol>
+            </div>
+        </div>
+
+<!--        Notes-->
+        <a id="anchor-note"></a>
+        <div class="card border-info mt-4">
+            <div class="card-header mt-2 mb-2">Some note</div>
+            <div class="card-body">
+                <ol class="list-group list-group-numbered mt-1 mb-3" id="ol-note">
+<!--                            Note element: mean_cat + mean-->
+                    <li class="blueprint list-group-item">
+                        <div class="dropdown">
+                            <textarea class="form-control mt-2 no-border"
+                                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                                    data-bs-toggle="dropdown" id="textarea-note-#number-ol-note#"
+                                    placeholder="Just a note . . ." name="note-#number-ol-note#"
+                                    autocomplete="off">#ol-note#</textarea>
+                            {% if hystory_note %}
+                            <ul class="dropdown-menu">
+                                {% for word in hystory_note %}
+                                <li><button class="dropdown-item" type="button" onclick="insertTextById('textarea-note-#number-ol-note#', '{{ word.replace('\'', '\\\'') }}');">{{ word }}</button></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </li>    
+                    <!-- button to add new note [from blueprint] -->
+                    <button class="list-group-item list-group-item-action list-group-item-success"
+                            type="button" onclick="newInstance('ol-note')">New Note</button>
+                </ol>
+            </div>
+        </div>
+
+<!--        Referencing other terms-->
+        {% if vox['referenced'] %}
+        <div class="card border-warning mt-4 mt-2">
+            <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Links</h5>
+                <ol class="list-group list-group-flush list-group-numbered mt-1 mb-3">
+                    {% for ref in vox['referenced'] %}
+                     <li class="list-group-item d-flex justify-content-between align-items-start">
+                         <div class="ms-2 me-auto">
+                             {% if ref[1] %}
+                             <a href="{{ url_for('search_pattern', word=ref[0]) }}" class="btn btn-link">{{ ref[0] }}</a>
+                             <a href="{{ url_for('search_pattern', word=ref[0], new_session='new-session') }}"
+                                class="btn btn-sm btn-outline-primary" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                             {% else %}
+                             <a href="{{ url_for('dictionary', word=ref[0][1:]) }}" class="btn btn-link text-danger">{{ ref[0][1:] }}</a>
+                             <a href="{{ url_for('dictionary', word=ref[0][1:], new_session='new-session') }}"
+                                class="btn btn-sm btn-outline-danger" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                             {% endif %}
+                         </div>
+                     </li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+        {% endif %}
+
+        <h2 class="mt-5"> Some related words </h2>
+        {% for link in vox['links'] %}
+        {% set link_loop = loop %}
+        <a id="anchor-linked-{{ link_loop.index0 }}"></a>
+        <div class="row mt-4 me-2">
+            <div class="col-1">
+                <h3> {{ link_loop.index }}. </h3>
+            </div>
+            <div class="col-9">
+                <input type="text" class="form-control input-lg no-border"
+                       placeholder="{{ link['name'] }}"
+                       value="{{ link['name'] }}" name="linked-{{ link_loop.index0 }}-term">
+            </div>
+            <div class="col-2">
+                <button type="submit" class="btn btn-danger btn-sm mt-4" name="btn-remove"
+                        value="remove-{{ link_loop.index0 }}">
+                    Delete
+                </button>
+            </div>
+        </div>
+
+        <!--            Categories-->
+        <div class="card border-success mt-4 mt-2 ">
+            <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Categorization</h5>
+                <ol class="list-group list-group-numbered mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-cat">
+                    <li class="blueprint list-group-item">
+                        <div class="dropdown">
+                            <input class="form-control no-border"
+                                   data-bs-toggle="dropdown" id="input-linked-{{ link_loop.index0 }}-cat-#number-linked-{{ link_loop.index0 }}-ol-cat#"
+                                   placeholder=". . ." name="linked-{{ link_loop.index0 }}-cat-#number-linked-{{ link_loop.index0 }}-ol-cat#" value="#linked-{{ link_loop.index0 }}-ol-cat#"
+                                   autocomplete="off" aria-expanded="true">
+                            {% if hystory_cat %}
+                            <ul class="dropdown-menu">
+                                {% for word in hystory_cat %}
+                                <li><button class="dropdown-item" type="button" onclick="insertTextById('input-linked-{{ link_loop.index0 }}-cat-#number-linked-{{ link_loop.index0 }}-ol-cat#', '{{ word.replace('\'', '\\\'') }}')">{{ word }}</button></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </li>
+                     <button class="list-group-item list-group-item-action list-group-item-success" type="button"
+                     onclick="newInstance('linked-{{ link_loop.index0 }}-ol-cat')">New Category</button>
+                </ol>
+            </div>
+        </div>
+
+        <!--        Card with mean and mean-cat list-->
+        <a id="anchor-linked-{{ link_loop.index0 }}-mean"></a>
+        <div class="card border-info mt-4">
+            <div class="card-header mt-2 mb-2">Meanings</div>
+            <div class="card-body">
+                <ol class="list-group list-group-numbered mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-mean">
+<!--                 Meaning element: mean_cat + mean-->
+                    <li class="blueprint list-group-item">
+                        <div class="row" id="linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat">
+                                <div class="col-6 blueprint">
+                                    <input type="text" class="form-control input-sm fw-semibold no-border mb-4"
+                                           name="linked-{{ link_loop.index0 }}-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat-#number-linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat#"
+                                           placeholder=". . ." value="#linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat#"
+                                           style="height: 30px">
+                                </div>
+                            <div class="col-6">
+                                <button class="list-group-item list-group-item-action list-group-item-success" type="button"
+                                        onclick="newInstance('linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat')">New</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <textarea class="form-control no-border mt-2"
+                        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                        placeholder="Just a meaning . . ." name="linked-{{ link_loop.index0 }}-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#">#linked-{{ link_loop.index0 }}-ol-mean#</textarea>
+                    </li>
+                     <button class="list-group-item list-group-item-action list-group-item-success" type="button"
+                     onclick="newInstance('linked-{{ link_loop.index0 }}-ol-mean', 'linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat')">New Meaning</button>
+                </ol>
+            </div>
+        </div>
+
+        <!--        Notes-->
+        <a id="anchor-linked-{{ link_loop.index0 }}-note"></a>
+        <div class="card border-info mt-4">
+            <div class="card-header mt-2 mb-2">Some Note</div>
+            <div class="card-body">
+                <ol class="list-group list-group-numbered mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-note">
+<!--                            Note element: mean_cat + mean-->
+                    <li class="blueprint list-group-item">
+                        <div class="dropdown">
+                            <textarea class="form-control no-border mt-2"
+                                      data-bs-toggle="dropdown" id="textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
+                                      oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                                      placeholder="Just a note . . ." name="linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
+                                      autocomplete="off">#linked-{{ link_loop.index0 }}-ol-note#</textarea>
+                            <ul class="dropdown-menu">
+                                {% for word in hystory_note %}
+                                <li><button class="dropdown-item" type="button" onclick="insertTextById('textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#', '{{ word.replace('\'', '\\\'') }}')">{{ word }}</button></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                     <button class="list-group-item list-group-item-action list-group-item-success" type="button"
+                     onclick="newInstance('linked-{{ link_loop.index0 }}-ol-note')">New Note</button>
+                </ol>
+            </div>
+        </div>
+
+<!--        Referencing-->
+        {% if link['referenced'] %}
+        <div class="card border-warning mt-4 mt-2">
+            <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Links</h5>
+                <ol class="list-group list-group-flush list-group-numbered mt-1 mb-3">
+                    {% for ref in link['referenced'] %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            {% if ref[1] %}
+                            <a href="{{ url_for('search_pattern', word=ref[0]) }}" class="btn btn-link">{{ ref[0] }}</a>
+                            <a href="{{ url_for('search_pattern', word=ref[0], new_session='new-session') }}"
+                               class="btn btn-sm btn-outline-primary" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                            {% else %}
+                            <a href="{{ url_for('dictionary', word=ref[0][1:]) }}" class="btn btn-link text-danger">{{ ref[0][1:] }}</a>
+                            <a href="{{ url_for('dictionary', word=ref[0][1:], new_session='new-session') }}"
+                               class="btn btn-sm btn-outline-danger" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+    <!-- Button trigger modal -->
+        <div class="row align-items-center justify-content-center">
+            <button type="submit" class="btn btn-success mt-4 w-80" name="btn-add-link">New Relation</button>
+        </div>
+        <div class="row align-items-center justify-content-center">
+            <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#submitModal">Update</button>
+        </div>
+
+        <!-- Modal to confirm update -->
+        <div class="modal fade" id="submitModal" tabindex="-1"
+             data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="submitModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="submitModalLabel">Sure to update?</h1>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="btn-update" value="btn-update">Save changes</button>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <!-- Modal to confirm delete -->
+        <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+             id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">Sure to delete the entire page?</h1>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger"
+                            name="btn-remove" value="remove">Delete</button>
+                  </div>
+              </div>
+          </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block js_content %}
+<script>
+    editTemplate('ol-cat', {{ vox['cat'] | tojson }});
+    editTemplate('ol-mean', {{ vox['mean'] | tojson }});
+    editTemplate('ol-note', {{ vox['note'] | tojson }});
+    {% for link in vox['links'] %}
+    editTemplate('linked-{{ loop.index0 }}-ol-cat', {{ link['cat'] | tojson }});
+    editTemplate('linked-{{ loop.index0 }}-ol-mean', {{ link['mean'] | tojson }});
+    editTemplate('linked-{{ loop.index0 }}-ol-note', {{ link['note'] | tojson }});
+    {% endfor %}
+</script>
+{% endblock %}

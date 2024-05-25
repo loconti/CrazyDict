@@ -1,0 +1,21 @@
+{% extends "floor.html" %}
+
+{% block title %} Crazy Dictionary {% endblock %}
+
+{% block content %}
+
+<div class="container" style="width: 80%">
+    <h2 class="mt-4">{{ title }}</h2>
+    <div class="list-group list-group-flush mt-3">
+        {% for item in listed %}
+        <a href="{{ url_for('dictionary', word=item) }}" class="list-group-item list-group-item-action"> {{ item }} </a>
+        {% endfor %}
+        {% if searched %}
+            <a href="{{ url_for('dictionary', word=searched) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"> {{ searched }}
+                <span class="badge bg-danger rounded-pill">new</span>
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

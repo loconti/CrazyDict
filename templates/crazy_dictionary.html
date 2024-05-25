@@ -1,0 +1,253 @@
+{% extends "floor.html" %}
+{% set vox = session['vox'] %}
+
+{% block title %} Crazy Dictionary {% endblock %}
+
+{% block content %}
+
+<div class="container-sm mt-4 mb-4" style="width: 80%;margin-top: 6rem">
+    <form method="post">
+        <input name="form-key" value="{{ form_key }}" type="hidden">
+<!--        Name of Vox -->
+        <div class="row">
+            <div class="col-sm-9">
+                <input type="text" class="form-control input-lg {{'no-border' if vox['name'] else ''}}" placeholder="{{ vox['name'] }}" value="{{ vox['name'] }}" name="term">
+            </div>
+            <!-- Button trigger modal -->
+            <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary mt-4 me-2" data-bs-toggle="modal" data-bs-target="#submitModal">
+                        Update
+                    </button>
+                    <button type="button" class="btn btn-danger mt-4"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        Delete
+                    </button>
+            </div>
+        </div>
+<!--        Row with meanings and categories-->
+        <div class="row mt-4 mb-4">
+            <div class="col-md-8">
+                <div class="card border-info">
+                    <div class="card-header mt-2 mb-2">Meanings</div>
+                    <div class="card-body">
+                        <ol class="list-group list-group-numbered mt-1 mb-3">
+                            {% for mean in vox['mean'] %}
+                            {% set mean_loop = loop %}
+<!--                            Meaning element: mean_cat + mean-->
+                            <li class="list-group-item">
+                                <div class="row">
+                                    {% for mean_cat in mean['mean-cat'] %}
+                                        <div class="col-6">
+                                            <input type="text" class="form-control input-sm fw-semibold {{'no-border' if mean['mean'] else ''}} mb-4"
+                                                   name="mean-{{ mean_loop.index0 }}-mean-cat-{{ loop.index0 }}"
+                                                   placeholder=". . ." value="{{ mean_cat }}"
+                                                   style="height: 30px">
+                                        </div>
+                                    {% endfor %}
+                                    <div class="col-4">
+                                        <button class="list-group-item list-group-item-action list-group-item-success" name="btn-add" value="mean-{{ mean_loop.index0 }}-mean-cat">New</button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <textarea class="form-control {{'no-border' if mean['mean'] else ''}} mt-2"
+                                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                                placeholder="Just a meaning . . ." name="mean-{{ loop.index0 }}">{{ mean['mean'] }}</textarea>
+                            </li>
+                            {% endfor %}
+                             <button class="list-group-item list-group-item-action list-group-item-success" name="btn-add" value="mean">New Meaning</button>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+<!--            Categories-->
+            <div class="col-6 col-md-4">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2 mb-2">Categorization</h5>
+                        <ol class="list-group list-group-numbered mt-1 mb-3">
+                            {% for cat in vox['cat'] %}
+                            <li class="list-group-item">
+                                <input class="form-control {{'no-border' if cat else ''}}"
+                                placeholder=". . ." name="cat-{{ loop.index0 }}" value="{{ cat }}">
+                            </li>
+                            {% endfor %}
+                             <button class="list-group-item list-group-item-action list-group-item-success" name="btn-add" value="cat">New Category</button>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!--        Notes-->
+        <div class="container" style="width: 75%;">
+            <div class="card border-info">
+                <div class="card-header mt-2 mb-2">Some note</div>
+                <div class="card-body">
+                    <ol class="list-group list-group-numbered mt-1 mb-3">
+                        {% for note in vox['note'] %}
+    <!--                            Note element-->
+                        <li class="list-group-item">
+                            <textarea class="form-control {{'no-border' if note else ''}} mt-2"
+                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                            placeholder="Just a note . . ." name="note-{{ loop.index0 }}">{{ note }}</textarea>
+                        </li>
+                        {% endfor %}
+                         <button class="list-group-item list-group-item-action list-group-item-success" name="btn-add" value="note">New Note</button>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mt-5"> Some related words </h2>
+        {% for link in vox['links'] %}
+        {% set link_loop = loop %}
+
+        <div class="row mt-4">
+            <div class="col-1">
+                <h3> {{ loop.index }}. </h3>
+            </div>
+            <div class="col-sm-9">
+
+                <input type="text" class="form-control input-lg {{'no-border' if link['name'] else ''}}"
+                       placeholder="{{ link['name'] }}"
+                       value="{{ link['name'] }}" name="linked-{{ link_loop.index0 }}-term">
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn btn-danger mt-4" name="btn-remove"
+                        value="remove-{{ link_loop.index0 }}">
+                    Delete
+                </button>
+            </div>
+        </div>
+
+<!--        Row with meanings and categories-->
+        <div class="row mt-4 mb-4">
+            <div class="col-md-8">
+                <div class="card border-info">
+                    <div class="card-header mt-2 mb-2">Meanings</div>
+                    <div class="card-body">
+                        <ol class="list-group list-group-numbered mt-1 mb-3">
+                            {% for mean in link['mean'] %}
+                            {% set mean_loop = loop %}
+<!--                            Meaning element: mean_cat + mean-->
+                            <li class="list-group-item">
+                                <div class="row">
+                                    {% for mean_cat in mean['mean-cat'] %}
+                                        <div class="col-6">
+                                            <input type="text" class="form-control input-sm fw-semibold {{'no-border' if mean['mean'] else ''}} mb-4"
+                                                   name="linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}-mean-cat-{{ loop.index0 }}"
+                                                   placeholder=". . ." value="{{ mean_cat }}"
+                                                   style="height: 30px">
+                                        </div>
+                                    {% endfor %}
+                                    <div class="col-4">
+                                        <button class="list-group-item list-group-item-action list-group-item-success" name="btn-add" value="linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}-mean-cat">New</button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <textarea class="form-control {{'no-border' if mean['mean'] else ''}} mt-2"
+                                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                                placeholder="Just a meaning . . ." name="linked-{{ link_loop.index0 }}-mean-{{ loop.index0 }}">{{ mean['mean'] }}</textarea>
+                            </li>
+                            {% endfor %}
+                             <button class="list-group-item list-group-item-action list-group-item-success" name="btn-add" value="linked-{{ link_loop.index0 }}-mean">New Meaning</button>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+<!--            Categories-->
+            <div class="col-6 col-md-4">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2 mb-2">Categorization</h5>
+                        <ol class="list-group list-group-numbered mt-1 mb-3">
+                            {% for cat in link['cat'] %}
+                            <li class="list-group-item">
+                                <input class="form-control {{'no-border' if cat else ''}}"
+                                placeholder=". . ." name="linked-{{ link_loop.index0 }}-cat-{{ loop.index0 }}" value="{{ cat }}">
+                            </li>
+                            {% endfor %}
+                             <button class="list-group-item list-group-item-action list-group-item-success"
+                                     name="btn-add" value="linked-{{ link_loop.index0 }}-cat">New Category</button>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!--        Notes-->
+        <div class="container" style="width: 75%;">
+            <div class="card border-info">
+                <div class="card-header mt-2 mb-2">Some Note</div>
+                <div class="card-body">
+                    <ol class="list-group list-group-numbered mt-1 mb-3">
+                        {% for note in link['note'] %}
+    <!--                            Note element-->
+                        <li class="list-group-item">
+                            <textarea class="form-control {{'no-border' if note else ''}} mt-2"
+                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                            placeholder="Just a note . . ." name="linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}">{{ note }}</textarea>
+                        </li>
+                        {% endfor %}
+                         <button class="list-group-item list-group-item-action list-group-item-success"
+                                 name="btn-add" value="linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}">New Note</button>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-sm-6 justify-content-center">
+                <button type="submit" class="btn btn-lg btn-success mt-4 w-80" name="btn-add" value="link">New Relation</button>
+            </div>
+            <!-- Button trigger modal -->
+            <div class="col-sm-6 ">
+                <button type="button" class="btn btn-lg btn-primary mt-4"
+                        data-bs-toggle="modal" data-bs-target="#submitModal">
+                    Update
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal to confirm update -->
+        <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+             id="submitModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Shure to update?</h1>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary"
+                            name="btn-update" value="btn-update">Save changes</button>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <!-- Modal to confirm delete -->
+        <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+             id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">Sure to delete the entire page?</h1>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger"
+                            name="btn-remove" value="remove">Delete</button>
+                  </div>
+              </div>
+          </div>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+{% endblock %}
