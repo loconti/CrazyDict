@@ -8,10 +8,10 @@ from flask import session
 import re
 from datetime import datetime, timedelta
 
-from CrazyDicFast import Vox, pattern_query, categories_query, category_query, categories_pattern_query
-from CrazyDicFast import category_checker, text_checker
-from CrazyDicFast import ConflictError, IlligalTextError
-from hystory import Hystory
+from CrazyDic_2 import Vox, pattern_query, categories_query, category_query, categories_pattern_query
+from CrazyDic_2 import category_checker, text_checker
+from CrazyDic_2 import ConflictError, IlligalTextError
+from history import History
 
 FOLDER = './'
 MOBILE_ONLY = True  # mobile comes before
@@ -24,7 +24,9 @@ app = Flask(__name__)
 app.secret_key = b'MaSarannoCazziMiei'
 app.permanent_session_lifetime = timedelta(hours=12)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-hystory = Hystory(('categories', 'notes'), checks={'categories': category_checker, 'notes': text_checker})  # implemented pages: 'categories' and 'notes'
+# implemented pages: 'categories' and 'notes'
+history = History(pages={'categories': category_checker, 'notes': text_checker},
+                  global_check=lambda w: not(w in ('', ' ') or '\n' in w or '\r' in w))
 
 def is_mobile() -> bool:
     if MOBILE_ONLY:
@@ -32,7 +34,7 @@ def is_mobile() -> bool:
     if DESKTOP_ONLY:
         return False
     user_agent = request.headers.get('User-Agent')
-    return 'Android' in user_agent or 'iPhone' in user_agent
+    return user_agent is not None and ('Android' in user_agent or 'iPhone' in user_agent)
 
 
 def key_gen() -> str:
@@ -118,7 +120,7 @@ class SessionData:
                 'key-form': self['key-form'], 'key-session': session['key-session'],
                 'dark-mode': self['dark-mode'], 'read-mode': self['read-mode'],
                 'is-chron-forward': go_forward() >= 0, 'is-chron-back': go_back() >= 0,
-                'hystory': hystory, 'mobile': is_mobile()}
+                'history': history, 'mobile': is_mobile()}
 
     def __getitem__(self, item):
         if 'key-session' not in session:
@@ -257,9 +259,10 @@ def search_pattern_category(kwargs):
         flash('No Category matched', 'warning')
         return redirect(url_for('search_categories'))
     if len(categories) == 1:
-        if categories[0][1] == 1:
+        if (categories[0])[1] == 1:
             flash(f'This is the only term matching {categories[0][0]} category', 'success')
-            return redirect(url_for('dictionary', word=category_query(categories[0][0])[0]))
+            # str() casting was added due to editor
+            return redirect(url_for('dictionary', word=category_query(str(categories[0][0]))[0]))
         return redirect(url_for('search_category', category=categories[0][0]))
 
     return render_template('search_categories.html', listed=categories, title=f'Categories matching: {category}',
@@ -386,10 +389,10 @@ def dictionary(kwargs=None):
                 vox.mean = mean
                 notes = read_form('note-')
                 vox.note = notes
-                hystory['notes'] = notes
+                history['notes'] = notes
                 categories = read_form('cat-')
                 vox.cat = categories
-                hystory['categories'] = categories
+                history['categories'] = categories
                 for idl, link in enumerate(vox.links):
                     if new_name := request.form[f'linked-{idl}-term']:
                         if new_name in ([link.name for i, link in enumerate(vox.links) if i != idl] + [vox.name]):
@@ -407,10 +410,10 @@ def dictionary(kwargs=None):
                     link.mean = mean
                     notes = read_form(f'linked-{idl}-note-')
                     link.note = notes
-                    hystory['notes'] = notes
+                    history['notes'] = notes
                     categories = read_form(f'linked-{idl}-cat-')
                     link.cat = categories
-                    hystory['categories'] = categories
+                    history['categories'] = categories
             except IlligalTextError as e:
                 flash(str(e), 'warning')
                 session_data['key-form'] = key_gen()
@@ -419,9 +422,11 @@ def dictionary(kwargs=None):
                 vox.add_link()
                 anchor = f'anchor-linked-{len(vox.links)-1}'
             elif 'btn-update' in request.form:
+                # updates if it's new word or if it has changed from 'vox-bis'
                 if vox and (session_data['vox-bis'] != vox or not vox.exists_key()):
                     try:
                         session_data['vox'] = vox.update()
+                        flash('Updated', 'success')
                     except ConflictError as e:
                         flash(str(e), 'danger')
                     else:
@@ -484,3 +489,4 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

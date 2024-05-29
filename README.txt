@@ -1,3 +1,9 @@
+To start a new dictionary:
+->  crate one with new_dictionary.sql
+    example: sqlite3 crazy_dict.sqlite < new_dictionary.sql
+->  specify the file name and folder in paths.py
+->  You are ready to start: execute CrazyDic_app.py! 
+
 JAVASCRIPT
 
 Blueprints

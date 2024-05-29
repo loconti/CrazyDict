@@ -1,7 +1,7 @@
 {% extends "floor.html" %}
 {% set vox = session['vox'] %}
-{% set hystory_cat = session['hystory']['categories'] %}
-{% set hystory_note = session['hystory']['notes'] %}
+{% set history_cat = session['history']['categories'] %}
+{% set history_note = session['history']['notes'] %}
 
 {% block title %} Crazy Dictionary - {{ vox['name'] }} {% endblock %}
 
@@ -35,9 +35,9 @@
                         <div class="dropdown">
                             <input class="form-control no-border" id="input-cat-#number-ol-cat#"
                             placeholder=". . ." name="cat-#number-ol-cat#" value="#ol-cat#" data-bs-toggle="dropdown" autocomplete="off" aria-expanded="true">
-                            {% if hystory_cat %}
+                            {% if history_cat %}
                             <ul class="dropdown-menu">
-                                {% for word in hystory_cat %}
+                                {% for word in history_cat %}
                                 <li><button class="dropdown-item" type="button" onclick="insertTextById('input-cat-#number-ol-cat#', '{{ word.replace('\'', '\\\'') }}');">{{ word }}</button></li>
                                 {% endfor %}
                             </ul>
@@ -96,9 +96,9 @@
                                     data-bs-toggle="dropdown" id="textarea-note-#number-ol-note#"
                                     placeholder="Just a note . . ." name="note-#number-ol-note#"
                                     autocomplete="off">#ol-note#</textarea>
-                            {% if hystory_note %}
+                            {% if history_note %}
                             <ul class="dropdown-menu">
-                                {% for word in hystory_note %}
+                                {% for word in history_note %}
                                 <li><button class="dropdown-item" type="button" onclick="insertTextById('textarea-note-#number-ol-note#', '{{ word.replace('\'', '\\\'') }}');">{{ word }}</button></li>
                                 {% endfor %}
                             </ul>
@@ -170,9 +170,9 @@
                                    data-bs-toggle="dropdown" id="input-linked-{{ link_loop.index0 }}-cat-#number-linked-{{ link_loop.index0 }}-ol-cat#"
                                    placeholder=". . ." name="linked-{{ link_loop.index0 }}-cat-#number-linked-{{ link_loop.index0 }}-ol-cat#" value="#linked-{{ link_loop.index0 }}-ol-cat#"
                                    autocomplete="off" aria-expanded="true">
-                            {% if hystory_cat %}
+                            {% if history_cat %}
                             <ul class="dropdown-menu">
-                                {% for word in hystory_cat %}
+                                {% for word in history_cat %}
                                 <li><button class="dropdown-item" type="button" onclick="insertTextById('input-linked-{{ link_loop.index0 }}-cat-#number-linked-{{ link_loop.index0 }}-ol-cat#', '{{ word.replace('\'', '\\\'') }}')">{{ word }}</button></li>
                                 {% endfor %}
                             </ul>
@@ -231,7 +231,7 @@
                                       placeholder="Just a note . . ." name="linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
                                       autocomplete="off">#linked-{{ link_loop.index0 }}-ol-note#</textarea>
                             <ul class="dropdown-menu">
-                                {% for word in hystory_note %}
+                                {% for word in history_note %}
                                 <li><button class="dropdown-item" type="button" onclick="insertTextById('textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#', '{{ word.replace('\'', '\\\'') }}')">{{ word }}</button></li>
                                 {% endfor %}
                             </ul>

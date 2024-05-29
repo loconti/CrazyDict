@@ -6,12 +6,13 @@ CREATE TABLE "words" (
 "mean"	TEXT DEFAULT '? ? ?',
 "ref"	INTEGER,
 "note"	TEXT,
-PRIMARY KEY("key")
+PRIMARY KEY("key"),
+FOREIGN KEY("ref") REFERENCES "words"("key")
 );
 
 CREATE TABLE "cat" (
 	"key"	INTEGER,
-	"word"	INTEGER,
+	"word"	INTEGER NOT NULL,
 	"cat"	TEXT NOT NULL,
 	PRIMARY KEY("key"),
 	FOREIGN KEY("word") REFERENCES "words"("key")

@@ -1,2 +1,3 @@
-# FOLDER = '/home/lore/Downloads/'
-FOLDER = ''
+FOLDER = ''  # the root folder containing CrazyDic_app.py, CrazyDic.py, ...
+DICTIONARY = FOLDER + 'crazy_dict.sqlite'
+HISTORY_FILE = FOLDER + 'history.json'
