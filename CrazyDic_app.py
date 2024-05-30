@@ -13,14 +13,15 @@ from CrazyDic_2 import category_checker, text_checker
 from CrazyDic_2 import ConflictError, IlligalTextError
 from history import History
 
-FOLDER = './'
+# specify the static folder from the web
+STATIC_FOLDER = "static"  if __name__ == '__main__' else '/static/static_web/'
 MOBILE_ONLY = True  # mobile comes before
 DESKTOP_ONLY = False
 SESSIONS_MAX = 6
 SESSION_TIMEOUT = timedelta(hours=12)  # done manually on, not current, sessions
 CHRON_MAX = 30
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=STATIC_FOLDER)
 app.secret_key = b'MaSarannoCazziMiei'
 app.permanent_session_lifetime = timedelta(hours=12)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
@@ -486,6 +487,9 @@ def home():
 
     return render_template('home.html', session=session_data.render(vox={'name': ''}), anchor='')
 
+@app.route('/test')
+def test():
+     return render_template('test.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

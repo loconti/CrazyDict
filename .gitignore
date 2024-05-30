@@ -1,7 +1,7 @@
 test*
 debug*
 history.json
-**/__pycache__/
+__pycache__/
 timing.py
-.vscode
+.vscode/
 *workspace
