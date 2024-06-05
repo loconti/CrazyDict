@@ -4,6 +4,12 @@ FROM HTML call: editLinks or editText(text, id)
 */
 const SPLIT_EXAMPLES = '~';
 
+function styleTextarea(id){
+    const area = document.getElementById(id);
+    area.style.height = "";
+    area.style.height = area.scrollHeight + "px";
+}
+
 function findExamples(text){
     /*
     returns a vector with main text as string
@@ -79,8 +85,9 @@ function editLinks(text, id=null, node=null){
 
 function editText(text, id){
     /*
-    edits text with examples: ~ and links: @ 
+    edits text with examples: ~ and links: @
     */
+
     const parent = document.getElementById(id);
     const text_examples = findExamples(text);
     if (text_examples[0]) {
@@ -101,19 +108,31 @@ function editText(text, id){
             editLinks(example, undefined, p_example);
         }
         parent.appendChild(p_example);
-    } 
+    }
 }
 
 /*
 Create new instance from blueprint
 newInstance needs a hidden html marked with blueprint class
 it adds this content before the blueprint replacing #number with second last number+1
+
+ALL SCRIPTS inside container will be EXECUTED after the execution of editTemplate
+ALL SCRIPTS inside blueprint element will be EXECUTED after it has been transformed and added by newInstance
 */
+
+function scriptsExecute(instance) {
+    const scripts = Array.from(instance.querySelectorAll("script"));
+    if (scripts.length > 0) {
+        scripts.forEach(scr => {
+            eval(scr.innerHTML);
+        });
+    }  
+}
 
 function makeInstance(instance, dic){
     for (const key in dic) {
         instance.innerHTML = instance.innerHTML.replaceAll(key, dic[key]);
-    }
+    }      
 }
 
 function newInstanceStep(parent_id){
@@ -125,6 +144,8 @@ function newInstanceStep(parent_id){
     new_instance.classList.remove('blueprint');
     makeInstance(new_instance, {['#number-'+parent_id+'#']: last_instance_number+1, ['#'+parent_id+'#']: ''});
     blueprint.before(new_instance);
+
+    scriptsExecute(new_instance);
     return last_instance_number+1;
 }
 
@@ -157,7 +178,7 @@ function editTemplateIterative(id, object_list){
                 if (typeof element[innerKey] === 'object') {
                     const id_child = id+'-#number-'+id+'#-'+innerKey
                     const fatherChild = child.querySelector('#'+CSS.escape(id_child));
-                    fatherChild.prepend(...editTemplateIterative(id_child, element[innerKey]));
+                    fatherChild.prepend(...editTemplateIterative(id_child, element[innerKey])); 
                 }
                 else {
                     // typeof element === 'string': should be executed once
@@ -175,5 +196,7 @@ function editTemplateIterative(id, object_list){
 }
 
 function editTemplate(id, object_list){
-    document.getElementById(id).prepend(...editTemplateIterative(id, object_list));
+    const elem = document.getElementById(id);
+    elem.prepend(...editTemplateIterative(id, object_list));
+    scriptsExecute(elem);
 }

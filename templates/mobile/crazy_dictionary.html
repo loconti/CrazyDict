@@ -30,7 +30,7 @@
         <div class="card border-success mt-4 mt-2">
             <div class="card-body">
                 <h5 class="card-title mt-2 mb-2">Categorization</h5>
-                <ol class="list-group list-group-numbered mt-1 mb-3" id="ol-cat">
+                <ol class="list-group list-group-flush mt-1 mb-3" id="ol-cat">
                     <li class="blueprint list-group-item">
                         <div class="dropdown">
                             <input class="form-control no-border" id="input-cat-#number-ol-cat#"
@@ -53,9 +53,9 @@
 <!--        Card with mean and mean-cat list-->
         <a id="anchor-mean"></a>
         <div class="card border-info mt-4">
-            <div class="card-header mt-2 mb-2">Meanings</div>
+            <div class="card-header">Meanings</div>
             <div class="card-body">
-                <ol class="list-group list-group-numbered mt-1 mb-3" id="ol-mean">
+                <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="ol-mean">
 <!--                 Meaning element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
                         <div class="row" id="ol-mean-#number-ol-mean#-mean-cat">
@@ -72,8 +72,11 @@
                         </div>
                         <hr>
                         <textarea class="form-control mt-2 no-border"
-                        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                        id="textarea-mean-#number-ol-mean#"
+                        oninput='styleTextarea(this.id);'
                         placeholder="Just a meaning . . ." name="mean-#number-ol-mean#">#ol-mean#</textarea>
+                        <!-- display the textarea correctly at loading too  -->
+                        <script>styleTextarea('textarea-mean-#number-ol-mean#');</script>
                     </li>
                     <!-- button to add new mean [from blueprint] -->
                     <button class="list-group-item list-group-item-action list-group-item-success"
@@ -84,18 +87,20 @@
 
 <!--        Notes-->
         <a id="anchor-note"></a>
-        <div class="card border-info mt-4">
-            <div class="card-header mt-2 mb-2">Some note</div>
+        <div class="card border-warning mt-4">
+            <div class="card-header">Some note</div>
             <div class="card-body">
-                <ol class="list-group list-group-numbered mt-1 mb-3" id="ol-note">
+                <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="ol-note">
 <!--                            Note element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
                         <div class="dropdown">
                             <textarea class="form-control mt-2 no-border"
-                                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                                    id="textarea-note-#number-ol-note#"
+                                    oninput="styleTextarea(this.id)"
                                     data-bs-toggle="dropdown" id="textarea-note-#number-ol-note#"
                                     placeholder="Just a note . . ." name="note-#number-ol-note#"
                                     autocomplete="off">#ol-note#</textarea>
+                                    <script>styleTextarea('textarea-note-#number-ol-note#');</script>
                             {% if history_note %}
                             <ul class="dropdown-menu">
                                 {% for word in history_note %}
@@ -114,7 +119,7 @@
 
 <!--        Referencing other terms-->
         {% if vox['referenced'] %}
-        <div class="card border-warning mt-4 mt-2">
+        <div class="card border-orange mt-4 mt-2">
             <div class="card-body">
                 <h5 class="card-title mt-2 mb-2">Links</h5>
                 <ol class="list-group list-group-flush list-group-numbered mt-1 mb-3">
@@ -163,7 +168,7 @@
         <div class="card border-success mt-4 mt-2 ">
             <div class="card-body">
                 <h5 class="card-title mt-2 mb-2">Categorization</h5>
-                <ol class="list-group list-group-numbered mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-cat">
+                <ol class="list-group list-group-flush mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-cat">
                     <li class="blueprint list-group-item">
                         <div class="dropdown">
                             <input class="form-control no-border"
@@ -190,7 +195,7 @@
         <div class="card border-info mt-4">
             <div class="card-header mt-2 mb-2">Meanings</div>
             <div class="card-body">
-                <ol class="list-group list-group-numbered mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-mean">
+                <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-mean">
 <!--                 Meaning element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
                         <div class="row" id="linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat">
@@ -207,8 +212,10 @@
                         </div>
                         <hr>
                         <textarea class="form-control no-border mt-2"
-                        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                        id="textarea-linked-{{ link_loop.index0 }}-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#"
+                        oninput="styleTextarea(this.id)"
                         placeholder="Just a meaning . . ." name="linked-{{ link_loop.index0 }}-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#">#linked-{{ link_loop.index0 }}-ol-mean#</textarea>
+                        <script>styleTextarea('textarea-linked-{{ link_loop.index0 }}-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#');</script>
                     </li>
                      <button class="list-group-item list-group-item-action list-group-item-success" type="button"
                      onclick="newInstance('linked-{{ link_loop.index0 }}-ol-mean', 'linked-{{ link_loop.index0 }}-ol-mean-#number-linked-{{ link_loop.index0 }}-ol-mean#-mean-cat')">New Meaning</button>
@@ -218,18 +225,20 @@
 
         <!--        Notes-->
         <a id="anchor-linked-{{ link_loop.index0 }}-note"></a>
-        <div class="card border-info mt-4">
+        <div class="card border-warning mt-4">
             <div class="card-header mt-2 mb-2">Some Note</div>
             <div class="card-body">
-                <ol class="list-group list-group-numbered mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-note">
+                <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-note">
 <!--                            Note element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
                         <div class="dropdown">
                             <textarea class="form-control no-border mt-2"
-                                      data-bs-toggle="dropdown" id="textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
-                                      oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-                                      placeholder="Just a note . . ." name="linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
-                                      autocomplete="off">#linked-{{ link_loop.index0 }}-ol-note#</textarea>
+                            id="textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
+                            data-bs-toggle="dropdown" 
+                            oninput="styleTextarea(this.id)"
+                            placeholder="Just a note . . ." name="linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#"
+                            autocomplete="off">#linked-{{ link_loop.index0 }}-ol-note#</textarea>
+                            <script>styleTextarea('textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#');</script>
                             <ul class="dropdown-menu">
                                 {% for word in history_note %}
                                 <li><button class="dropdown-item" type="button" onclick="insertTextById('textarea-linked-{{ link_loop.index0 }}-note-#number-linked-{{ link_loop.index0 }}-ol-note#', '{{ word.replace('\'', '\\\'') }}')">{{ word }}</button></li>
@@ -245,7 +254,7 @@
 
 <!--        Referencing-->
         {% if link['referenced'] %}
-        <div class="card border-warning mt-4 mt-2">
+        <div class="card border-orange mt-4 mt-2">
             <div class="card-body">
                 <h5 class="card-title mt-2 mb-2">Links</h5>
                 <ol class="list-group list-group-flush list-group-numbered mt-1 mb-3">

@@ -310,7 +310,7 @@ class VoxEl:
 
     def referenced(self) -> tuple[str, ...]:
         # casting is needed because if None is found re.findall returns an empty list
-        pattern = r'(@[^ ^({})^({})^({})]+)'.format(MEAN_FORMAT_DELIMETER, MEANCAT_FORMAT_DELIMETER, FORMAT_DELIMETER)
+        pattern = r'(@[^ \n\r^({})^({})^({})]+)'.format(MEAN_FORMAT_DELIMETER, MEANCAT_FORMAT_DELIMETER, FORMAT_DELIMETER)
         res = set(re.findall(pattern, self._mean)) | set(re.findall(pattern, self._note))
         return tuple(map(lambda x: x.replace('_', ' '), res))
 

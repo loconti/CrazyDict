@@ -20,12 +20,10 @@
         {{ vox['name'] }}</h1>
 
     {% if vox['cat'] and vox['cat'] != [''] %}
-    <div class="card border-vio border-2">
-        <div class="card-body text-center">
+    <div class="row text-center fs-1">
         {% for cat in vox['cat'] %}
-            <a href="{{ url_for('search_category', category=cat) }}" class="btn btn-link text-teal fs-5">{{ cat }}</a>
+            <a href="{{ url_for('search_category', category=cat) }}" class="col-4 col-md-auto btn btn-link text-teal fs-2">{{ cat }}</a>
         {% endfor %}
-        </div>
     </div>
     {% endif %}
     <hr class="border border-vio border-3 opacity-75">
@@ -33,20 +31,20 @@
     <ol class="list-group {{ 'list-group-numbered' if vox['mean'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
         {% for mean in vox['mean'] %}
         {% set loop_mean = loop %}
-        <li class="list-group-item text-teal fw-bold border-teal fs-3">
+        <li class="list-group-item text-teal border-teal">
             <div class="card border-vio">
             <div class="card-header bg-vio text-light">
-                <div class="d-flex w-40 justify-content-between">
-                    <p class="fw-medium fst-italic ms-5">
+                <div class="row ms-4 fs-3 fw-bold">
                     {% for mean_cat in mean['mean-cat'] %}
+                    <p class="col-4 col-md-auto">
                     {{ mean_cat if mean_cat else '' }}
-                        {% if (loop.index < mean['mean-cat']|select|list|length) and mean_cat %}&emsp;-&emsp;{% endif %}
-                    {% endfor %}
                     </p>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="card-body fs-4" id="mean-{{ loop_mean.index0 }}">
-                <script>editText("{{ mean['mean'] }}", "mean-{{ loop_mean.index0 }}")</script>
+            <div class="card-body fs-4">
+                <pre id="mean-{{ loop_mean.index0 }}"></pre>
+                <script>editText({{ mean['mean'] | tojson }}, "mean-{{ loop_mean.index0 }}")</script>
             </div>
             </div>
         </li>
@@ -63,9 +61,9 @@
             <ol class="list-group {{ 'list-group-numbered' if vox['note'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
                 {% for note in vox['note'] %}
                 <li class="list-group-item fs-4">
-                <p class="fs-5 ms-5" id="note-{{ loop.index0 }}">
-                    <script>editLinks("{{ note }}", "note-{{ loop.index0 }}")</script>
-                </p>
+                <pre class="fs-5 ms-5" id="note-{{ loop.index0 }}">
+                </pre>
+                <script>editLinks({{ note | tojson }}, "note-{{ loop.index0 }}")</script>
                 </li>
                 {% endfor %}
             </ol>
@@ -74,7 +72,7 @@
     {% endif %}
 
     {% if vox['links'] %}
-    <h1 class="text-teal mt-5"> Some related words </h1>
+    <h1 class="text-teal mt-5"> Related to: </h1>
     {% for link in vox['links'] %}
     {% set link_loop = loop %}
     <h1 class="text-danger display-3 ms-2">
@@ -82,12 +80,10 @@
         <!-- <i class="bi bi-nut-fill"></i>&emsp;-->{{ link['name'] }}
     </h1>
     {% if link['cat'] and link['cat'] != [''] %}
-    <div class="card border-danger border-2">
-        <div class="card-body text-center">
+    <div class="row text-center fs-1">
         {% for cat in link['cat'] %}
-            <a href="{{ url_for('search_category', category=cat) }}" class="btn btn-link text-teal fs-5">{{ cat }}</a>
+            <a href="{{ url_for('search_category', category=cat) }}" class="col-4 col-md-auto btn btn-link text-teal fs-2">{{ cat }}</a>
         {% endfor %}
-        </div>
     </div>
     {% endif %}
     <hr class="border border-danger border-2 opacity-75">
@@ -107,8 +103,9 @@
                         </p>
                     </div>
                 </div>
-                <div class="card-body fs-4" id="linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}">
-                    <script>editText("{{ mean['mean'] }}", "linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}")</script>
+                <div class="card-body fs-4">
+                    <pre id="linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}"></pre>
+                    <script>editText({{ mean['mean'] | tojson}}, "linked-{{ link_loop.index0 }}-mean-{{ mean_loop.index0 }}")</script>
                 </div>
             </div>
         </li>
@@ -124,9 +121,8 @@
             <ol class="list-group {{ 'list-group-numbered' if link['note'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
                 {% for note in link['note'] %}
                 <li class="list-group-item fs-4">
-                    <p class="fs-5 ms-5" id="linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}">
-                        <script>editLinks("{{ note }}", "linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}")</script>
-                    </p>
+                    <pre class="fs-5 ms-5" id="linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}"></pre>
+                    <script>editLinks({{ note | tojson }}, "linked-{{ link_loop.index0 }}-note-{{ loop.index0 }}")</script>
                 </li>
                 {% endfor %}
             </ol>
