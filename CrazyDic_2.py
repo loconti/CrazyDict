@@ -92,7 +92,7 @@ def mean_formatter(mean: dict[str, Any]) -> str:
     if 'mean-cat' in mean:
         mean_cat = set(filter(bool, map(trim, mean['mean-cat'])))
         if not all(map(category_checker, mean_cat)):
-            raise IlligalTextError('`, `'.join(mc for mc in mean['mean-cat'] if not category_checker(mc)),
+            raise IlligalTextError('", "'.join(mc for mc in mean['mean-cat'] if not category_checker(mc)),
                                     category_checker)
         res = MEANCAT_FORMAT_DELIMETER.join(mean_cat) + MEAN_FORMAT_DELIMETER + _mean
     else:

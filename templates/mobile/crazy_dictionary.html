@@ -8,7 +8,7 @@
 {% block content %}
 
 <div class="container-sm mt-4 mb-4" style="width: 100%;margin-top: 6rem">
-    <form method="post">
+    <form method="post" id="form-dictionary">
         <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
         <input name="key-form" value="{{ session['key-form'] }}" type="hidden">
 <!--        Name of Vox -->
@@ -53,8 +53,8 @@
 <!--        Card with mean and mean-cat list-->
         <a id="anchor-mean"></a>
         <div class="card border-info mt-4">
-            <div class="card-header">Meanings</div>
             <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Meanings</h5>
                 <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="ol-mean">
 <!--                 Meaning element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
@@ -88,8 +88,8 @@
 <!--        Notes-->
         <a id="anchor-note"></a>
         <div class="card border-warning mt-4">
-            <div class="card-header">Some note</div>
             <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Some note</h5>
                 <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="ol-note">
 <!--                            Note element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
@@ -193,8 +193,8 @@
         <!--        Card with mean and mean-cat list-->
         <a id="anchor-linked-{{ link_loop.index0 }}-mean"></a>
         <div class="card border-info mt-4">
-            <div class="card-header mt-2 mb-2">Meanings</div>
             <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Meanings</h5>
                 <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-mean">
 <!--                 Meaning element: mean_cat + mean-->
                     <li class="blueprint list-group-item">
@@ -226,8 +226,8 @@
         <!--        Notes-->
         <a id="anchor-linked-{{ link_loop.index0 }}-note"></a>
         <div class="card border-warning mt-4">
-            <div class="card-header mt-2 mb-2">Some Note</div>
             <div class="card-body">
+                <h5 class="card-title mt-2 mb-2">Some note</h5>
                 <ol class="list-group list-group-numbered list-group-flush mt-1 mb-3" id="linked-{{ link_loop.index0 }}-ol-note">
 <!--                            Note element: mean_cat + mean-->
                     <li class="blueprint list-group-item">

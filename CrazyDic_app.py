@@ -253,9 +253,9 @@ def search_categories():
 def search_pattern_category(kwargs):
     if 'category' not in kwargs:
         raise ValueError
-    category = kwargs['category']
+    category: str = kwargs['category']
 
-    categories = categories_pattern_query(category[1:] if category[0] == '@' else category + '%')
+    categories = categories_pattern_query(category.removeprefix('@') if category.startswith('@') else category + '%')
     if not categories:
         flash('No Category matched', 'warning')
         return redirect(url_for('search_categories'))

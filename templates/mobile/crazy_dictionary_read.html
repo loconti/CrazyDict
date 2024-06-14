@@ -14,7 +14,7 @@
     };
 </script>
 
-<div class="container text-break mt-4" style="width: 90%;">
+<div class="container text-break mt-3" style="width: 90%;">
     <h1 class="display-1 text-vio me-3">
 <!--            <i class="bi bi-nut-fill"></i>&emsp;-->
         {{ vox['name'] }}</h1>
@@ -61,8 +61,7 @@
             <ol class="list-group {{ 'list-group-numbered' if vox['note'] | length > 1 else '' }} list-group-flush mt-1 mb-3">
                 {% for note in vox['note'] %}
                 <li class="list-group-item fs-4">
-                <pre class="fs-5 ms-5" id="note-{{ loop.index0 }}">
-                </pre>
+                <pre class="fs-5 ms-5" id="note-{{ loop.index0 }}"></pre>
                 <script>editLinks({{ note | tojson }}, "note-{{ loop.index0 }}")</script>
                 </li>
                 {% endfor %}

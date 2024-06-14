@@ -23,16 +23,34 @@
                 <form method="post" role="search">
                     <input name="key-session" value="{{ session['key-session'] }}" type="hidden">
                     {% if session['is-chron-back'] %}
-                    <button class="btn btn-outline-secondary me-1" name="go-back" type="submit"><i class="bi bi-arrow-left-circle"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary me-1" name="go-back" type="submit">
+                        <i class="bi bi-arrow-left-circle"></i>
+                    </button>
                     {% else %}
-                    <button class="btn btn-outline-secondary me-1" name="go-back" type="submit" disabled><i class="bi bi-arrow-left-circle"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary me-1" name="go-back" type="submit" disabled>
+                        <i class="bi bi-arrow-left-circle"></i>
+                    </button>
                     {% endif %}
+                    <!-- Reloads page submitting the form -->
+                    <button class="btn btn-sm btn-outline-secondary me-1" type="button" id="btn-sync" 
+                    onclick="document.getElementById('form-dictionary').submit()" disabled>
+                        <i class="bi bi-circle"></i>
+                    </button>
+                    <script>
+                        const path = window.location.pathname
+                        if(path.startsWith('/dictionary') && path.split('/').length == 3)
+                            {document.getElementById('btn-sync').disabled=false}
+                    </script>
                     {% if session['is-chron-forward'] %}
-                    <button class="btn btn-outline-secondary me-1" name="go-forward" type="submit"><i class="bi bi-arrow-right-circle"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary me-1" name="go-forward" type="submit">
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </button>
                     {% else %}
-                    <button class="btn btn-outline-secondary me-1" name="go-forward" type="submit" disabled><i class="bi bi-arrow-right-circle"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary me-1" name="go-forward" type="submit" disabled>
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </button>
                     {% endif %}
-                    <button class="navbar-toggler btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <button class="navbar-toggler btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                         <i class="bi bi-three-dots"></i>
                     </button>
                 </form>
