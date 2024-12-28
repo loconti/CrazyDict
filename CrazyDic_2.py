@@ -8,7 +8,10 @@ from paths import DICTIONARY
 FORMAT_DELIMETER = '# -> #'
 MEANCAT_FORMAT_DELIMETER = '# ! #'
 MEAN_FORMAT_DELIMETER = '# !! #'
-
+TERM_MATCH = re.compile(r"[a-zA-Z À-ÿ-'?]+$")
+TEXT_MATCH = re.compile(r"[a-z .àòùèì]*$")
+CAT_MATCH = re.compile(r'>|<|\[|\]|\{|\}|\\|\||/|`')
+REFE_MATCH = re.compile(r'(@[^ \n\r^({})^({})^({})]+)'.format(MEAN_FORMAT_DELIMETER, MEANCAT_FORMAT_DELIMETER, FORMAT_DELIMETER))
 
 # setter-getter use:
 # the private key have the db-way data, public setter-getter the user-way
@@ -35,20 +38,20 @@ def trim(word: str) -> str:
 
 
 def term_checker(term: str) -> bool:
-    match1 = re.match(r"[a-zA-Z À-ÿ-'?]+$", term) is not None
+    match1 = re.match(TERM_MATCH, term) is not None
     return match1
 
 
 def category_checker(cat: str) -> bool:
     # Empty categories raise no error, they are simply discarded
-    match1 = re.match(r"[a-z .àòùèì]*$", cat) is not None
+    match1 = re.match(CAT_MATCH, cat) is not None
     return match1
 
 
 def text_checker(text: str) -> bool:
     if FORMAT_DELIMETER in text or MEAN_FORMAT_DELIMETER in text or MEANCAT_FORMAT_DELIMETER in text:
         return False
-    if re.findall(r'\(|\)|>|<|\[|\]|\{|\}|\\|\||/|`', text):
+    if re.findall(TEXT_MATCH, text):
         return False
     return True
 
@@ -310,8 +313,7 @@ class VoxEl:
 
     def referenced(self) -> tuple[str, ...]:
         # casting is needed because if None is found re.findall returns an empty list
-        pattern = r'(@[^ \n\r^({})^({})^({})]+)'.format(MEAN_FORMAT_DELIMETER, MEANCAT_FORMAT_DELIMETER, FORMAT_DELIMETER)
-        res = set(re.findall(pattern, self._mean)) | set(re.findall(pattern, self._note))
+        res = set(re.findall(REFE_MATCH, self._mean)) | set(re.findall(REFE_MATCH, self._note))
         return tuple(map(lambda x: x.replace('_', ' '), res))
 
     def exists_key(self) -> bool:
