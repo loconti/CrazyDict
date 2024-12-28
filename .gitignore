@@ -5,3 +5,4 @@ __pycache__/
 timing.py
 .vscode/
 *workspace
+paths.py
